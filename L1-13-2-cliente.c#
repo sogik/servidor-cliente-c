@@ -68,8 +68,8 @@ namespace Cliente
                     }
                 }
                 this.BackColor = Color.Gray;
-                socket.Shutdown(SocketShutdown.Both);
-                socket.Close();
+                server.Shutdown(SocketShutdown.Both);
+                server.Close();
             }
             catch (Exception ex)
             {
