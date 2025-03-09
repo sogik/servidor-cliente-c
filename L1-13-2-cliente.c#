@@ -1,0 +1,80 @@
+using System;
+using System.Net;
+using System.Net.Sockets;
+using System.Text;
+using System.Windows.Forms;
+using System.Drawing;
+using System.Data;
+using System.Collections.Generic;
+using System.Linq;
+using System.ComponentModel;
+
+namespace Cliente
+{
+    public partial class ClienteForm : Form
+    {
+        Socket server;
+        public ClienteForm()
+        {
+            InitializeComponent();
+        }
+        private void ClienteForm_Load(object sender, EventArgs e)
+        {
+            this.BackColor = Color.Gray;
+        }
+
+        private void BtnEnviar_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                IPAddress direc = IPAddress.Parse("127.0.0.1");
+                IPEndPoint ipep = new IPEndPoint(direc, 9050);
+                server = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                try
+                {
+                    server.Connect(ipep);
+
+                    if (server.Connected)
+                    {
+                        this.BackColor = Color.Green;
+                        MessageBox.Show("Conectado con exito");
+                    }
+
+                    if(Servicio1.Checked)
+                    {
+                        string mensaje = "1/" + grados.Text;
+                        byte[] msg = Encoding.ASCII.GetBytes(mensaje);
+                        server.Send(msg);
+
+                        byte[] msg2 = new byte[80];
+                        server.Receive(msg2);
+                        mensaje = Encoding.ASCII.GetString(msg2).Split('\0')[0];
+                        MessageBox.Show("El resultado es: " + mensaje);
+                    }
+                    else if(Servicio2.Checked)
+                    {
+                        string mensaje = "2/" + grados.Text;
+                        byte[] msg = Encoding.ASCII.GetBytes(mensaje);
+                        server.Send(msg);
+
+                        byte[] msg2 = new byte[80];
+                        server.Receive(msg2);
+                        mensaje = Encoding.ASCII.GetString(msg2).Split('\0')[0];
+                        MessageBox.Show("El resultado es: " + mensaje);
+                    }
+                    else
+                    {   
+                        MessageBox.Show("No se ha seleccionado ningun servicio");
+                    }
+                }
+                this.BackColor = Color.Gray;
+                socket.Shutdown(SocketShutdown.Both);
+                socket.Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error: " + ex.Message);
+            }
+        }
+    }
+}
